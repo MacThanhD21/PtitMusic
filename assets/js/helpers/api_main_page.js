@@ -95,7 +95,7 @@ const app = {
 
       const html = `
         <div class="card-simple">
-          <a href="playmusic.html">
+          <a href="post.html?albumId=${album_1._id}"> 
             <figure>
               <img src="${album_1.image}" alt="${album_1.name_Album}" />
             </figure>
@@ -104,7 +104,7 @@ const app = {
           <p><a href="user.html">${album_1.name_Album}</a></p>
         </div>
         <div class="card-simple">
-          <a href="playmusic.html">
+          <a href="post.html?albumId=${album_1._id}"> 
             <figure>
               <img src="${album_2.image}" alt="${album_2.name_Album}" />
             </figure>
