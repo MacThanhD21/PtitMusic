@@ -61,7 +61,7 @@ const app = {
     albums.forEach((album) => {
       const html = `
         <div class="card-simple">
-          <a href="post.html?albumId=${album._id}">
+          <a href="album.html?albumId=${album._id}">
             <figure>
               <img
                 src="${album.image}"
@@ -95,7 +95,7 @@ const app = {
 
       const html = `
         <div class="card-simple">
-          <a href="post.html?albumId=${album_1._id}"> 
+          <a href="album.html?albumId=${album_1._id}"> 
             <figure>
               <img src="${album_1.image}" alt="${album_1.name_Album}" />
             </figure>
@@ -243,7 +243,7 @@ const app = {
   render__four: () => {
     artists.forEach((artist, index) => {
       const html = `
-          <a href="user.html">
+          <a href="artist.html?artistId=${artist._id}">
             <div class="card-artists-vertical">
               <figure>
                 <img
