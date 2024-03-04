@@ -11,8 +11,8 @@
   scroll-snap-align: start;
   margin-bottom: 10px;
   margin-right: 10px;
-  padding: 10px;
-  width: 180px;
+  padding: 15px;
+  width: 250px;
   color: var(--background-dark-secondary-main);
 }
 
@@ -79,7 +79,7 @@
 }
 
 .card-category-vertical h4 {
-  font-size: 0.950rem;
+  font-size: 20px;
 }
 
 .card-category-vertical span {

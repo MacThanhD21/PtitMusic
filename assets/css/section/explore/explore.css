@@ -1,6 +1,8 @@
 /*========== SECTION EXPLORE */
 .section-explore {
-  margin: 20px 0 0 0;
+  margin: -70px 0 0 0;
+  padding-top: 70px; /* Should match the height of your header */
+  scroll-margin-top: 70px; /* Should match the height of your header */
 }
 
 .section-explore .section-explore-menu {

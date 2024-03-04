@@ -77,11 +77,6 @@ header form input:focus,
   font-size: 20px;
 }
 
-header form:focus-within .fa-search {
-  transition: var(--transition-3s-ease);
-  color: #0000FF;
-}
-
 header form .far,
 .hero form .far {
   transition: var(--transition-3s-ease);

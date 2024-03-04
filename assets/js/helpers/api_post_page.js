@@ -1,6 +1,74 @@
 import { songs } from "../data/songs.js";
+import { albums } from "../data/albums.js";
 
+// console.log(albums);
+console.log(songs.length);
 console.log(songs);
+// Hàm Query Song by Id
+async function querySongById(songId) {
+  // URL của API
+  const apiUrl = "https://ap-southeast-1.aws.data.mongodb-api.com/app/data-pkcss/endpoint/getsongbyid";
+
+  try {
+    // Gửi yêu cầu POST đến API với id của bài hát
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ _id: songId })
+    });
+
+    // Kiểm tra nếu kết quả trả về không thành công
+    if (!response.ok) {
+      throw new Error('Failed to fetch song');
+    }
+
+    // Parse JSON từ phản hồi
+    const songData = await response.json();
+    
+    // Trả về dữ liệu bài hát
+    return songData;
+  } catch (error) {
+    console.error('Error querying song by id:', error);
+    return null; // Trả về null nếu có lỗi
+  }
+}
+
+
+// idAlbums khi click vào album sẽ lấy danh sách bài hát của album đó
+// Lấy tham số albumId từ URL
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const albumIdFromMainPage = urlParams.get('albumId');
+
+// Sử dụng albumId và albumName theo nhu cầu của bạn
+
+let albumFinded = albums.find(album => album._id === albumIdFromMainPage);
+
+let playlistMusicAlbumFined = albumFinded.tracks; // laasy ra danh sach id cac bai hat
+
+async function getListData() {
+  let listData = [];
+  for (const idMusicofTrack of playlistMusicAlbumFined) {
+    try {
+      const songData = await querySongById(idMusicofTrack);
+      if(songData) {
+        listData.push(songData);
+      }
+      else {
+        console.log('Failed to fetch song data');
+      }
+    } catch (error) {
+      console.error('Error fetching song data:', error);
+    }
+  }
+  return listData; // Trả về listData khi đã hoàn thành vòng lặp
+}
+
+
+const listDataArray = await getListData(); // Lấy danh sách bài hát từ API
+
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
@@ -9,7 +77,7 @@ const PlAYER_STORAGE_KEY = "F8_PLAYER";
 
 const player = $(".player");
 const cd = $(".cd");
-const heading = $("header h2");
+const heading = $(".header h2");
 const cdThumb = $(".cd-thumb");
 const audio = $("#audio");
 const playBtn = $(".btn-toggle-play");
@@ -20,7 +88,8 @@ const nextBtn = $(".btn-next");
 const randomBtn = $(".btn-random");
 const repeatBtn = $(".btn-repeat");
 const playlist = $(".playlist");
-console.log(playlist);
+// const songss = $(".playlist .song");
+// console.log(songss);
 
 // object app
 const app = {
@@ -37,9 +106,7 @@ const app = {
     // (2/2) Uncomment the line below to use localStorage
     // localStorage.setItem(PlAYER_STORAGE_KEY, JSON.stringify(this.config));
   },
-  songs: songs,
-
-  // render giao diện
+  songs: listDataArray,
   render: function () {
     const htmls = this.songs.map((song, index) => {
       return `
@@ -47,11 +114,11 @@ const app = {
                 index === this.currentIndex ? "active" : ""
               }" data-index="${index}">
                   <div class="thumb"
-                      style="background-image: url('${song.imagecover}')">
+                      style="background-image: url('${song.result.imagecover ? song.result.imagecover : ''}')">
                   </div>
                   <div class="body">
-                      <h3 class="title">${song.title}</h3>
-                      <p class="author">${song.artist}</p>
+                      <h3 class="title">${song.result.title}</h3>
+                      <p class="author">${song.result.artist}</p>
                   </div>
                   <div class="option">
                       <i class="fas fa-ellipsis-h"></i>
@@ -232,9 +299,15 @@ const app = {
     }, 300);
   },
   loadCurrentSong: function () {
-    heading.textContent = this.currentSong.title;
-    cdThumb.style.backgroundImage = `url('${this.currentSong.imagecover}')`;
-    audio.src = this.currentSong.link;
+    if (this.currentSong) {
+      heading.textContent = this.currentSong.result.title;
+      cdThumb.style.backgroundImage = `url('${this.currentSong.result.imagecover}')`;
+      audio.src = this.currentSong.result.link;
+    } else {
+      console.error(
+        "Current song is undefined or does not have a title property."
+      );
+    }
   },
   loadConfig: function () {
     this.isRandom = this.config.isRandom;
@@ -272,52 +345,82 @@ const app = {
     // Defines properties for the object
     this.defineProperties();
 
-    // Lắng nghe / xử lý các sự kiện (DOM events)
-    // Listening / handling events (DOM events)
-    this.handleEvents();
-
     // Tải thông tin bài hát đầu tiên vào UI khi chạy ứng dụng
     // Load the first song information into the UI when running the app
     this.loadCurrentSong();
+
+    // Lắng nghe / xử lý các sự kiện (DOM events)
+    // Listening / handling events (DOM events)
+    this.handleEvents();
 
     // Render playlist
     this.render();
 
     // Hiển thị trạng thái ban đầu của button repeat & random
     // Display the initial state of the repeat & random button
-    // randomBtn.classList.toggle("active", this.isRandom);
-    // repeatBtn.classList.toggle("active", this.isRepeat);
+    randomBtn.classList.toggle("active", this.isRandom);
+    repeatBtn.classList.toggle("active", this.isRepeat);
   },
 };
 
 app.start();
 
-// // Function to call an API and convert the response to an object
-// async function fetchData(apiUrl) {
-//   try {
-//     const response = await fetch(apiUrl);
+// Handle Events for the player
 
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! Status: ${response.status}`);
-//     }
+const _playlist = document.querySelector(".playlist");
+const trending = document.querySelector("#section__trending");
+const _player = document.querySelector(".player .playing");
+let isScrolling = false;
 
-//     const data = await response.json();
-//     return data;
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     return null;
-//   }
-// }
+window.addEventListener("scroll", () => {
+  if (!isScrolling) {
+    // Nếu không có scroll đang diễn ra, thì lên lịch thực hiện việc xử lý
+    window.requestAnimationFrame(() => {
+      handleScroll();
+      isScrolling = false;
+    });
 
-// // Example usage
-// const apiUrl =
-//   "https://ap-southeast-1.aws.data.mongodb-api.com/app/data-pkcss/endpoint/getsong?fbclid=IwAR1qb108B1bhulsP2OMSY4ZtbPa75geFt4mpRl464_rgudnvacDRbxYe21I";
+    isScrolling = true;
+  }
+});
 
-// fetchData(apiUrl).then((data) => {
-//   if (data) {
-//     console.log("API response:", data);
-//     // Now you can use the 'data' object in your code
-//   } else {
-//     console.log("Failed to fetch data.");
-//   }
-// });
+function handleScroll() {
+  const trendingRect = trending.getBoundingClientRect();
+  const newMaxHeight = window.innerHeight - trendingRect.bottom + 230;
+
+  // Sử dụng transition để tạo hiệu ứng giảm dần mượt mà
+  setTimeout(() => {
+    _playlist.style.transition = "max-height 0.3s ease-in-out";
+  }, 0);
+  _playlist.style.maxHeight = newMaxHeight > 10 ? `${newMaxHeight}px` : "55vh";
+}
+
+// handle title running
+
+function updateMarqueeAnimation() {
+  const titleElement = document.querySelector(".song.active .title");
+  console.log(titleElement);
+  const parentElement = titleElement.parentElement;
+
+  if (titleElement.offsetWidth > parentElement.offsetWidth) {
+    // Bắt đầu chạy animation
+    titleElement.style.animationPlayState = "paused";
+  } else {
+    // Không chạy animation
+    titleElement.style.animationPlayState = "running";
+  }
+}
+
+playlist.addEventListener('click', function(event) {
+  // Kiểm tra xem phần tử được click có phải là một bài hát không
+  const songElement = event.target.closest('.song');
+  if (songElement) {
+    // Lấy index từ thuộc tính data-index của bài hát
+    const index = parseInt(songElement.getAttribute('data-index'), 10);
+
+    // Sau khi xử lý, cập nhật animation
+    updateMarqueeAnimation();
+  }
+});
+
+
