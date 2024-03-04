@@ -125,9 +125,6 @@ function likeMusicPlay() {
 var audio1 = new Audio("");
 // PLAY SOUND
 function playSound(id) {
-  console.log(id);
-  audio1.src =
-    "https://firebasestorage.googleapis.com/v0/b/ptitwebmusicspring24.appspot.com/o/y2mate.is%20-%20Vietsub%20Thanh%20B%C3%ACnh%20Ng%E1%BB%99%20Ho%C3%A0ng%20Thi%20Ph%C3%B9%20%E6%B8%85%E5%B9%B3%E8%AF%AF%20%E9%BB%84%E8%AF%97%E6%89%B6--vGwJat7LZ0-128k-1695022607.mp3?alt=media&token=34d14d2b-291f-44c1-8c54-1f35da09c6df";
   audio1.play();
   // const playBtnPlayCard = document.querySelectorAll("");
   document
@@ -187,8 +184,3 @@ function download() {
     window.location.href = "../musics/1.mp3";
   }, 3000);
 }
-
-// NUMBER ALBUMS
-var cardGridLen = document.getElementById("cardGridLen").childElementCount;
-var numAlbums = document.getElementById("numAlbums");
-numAlbums.innerHTML = cardGridLen;

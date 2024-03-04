@@ -1,5 +1,6 @@
 import { songs } from "../data/songs.js";
 import { albums } from "../data/albums.js";
+import { artists } from "../data/artists.js";
 
 // console.log(albums);
 console.log(songs.length);
@@ -353,6 +354,10 @@ const app = {
     // Listening / handling events (DOM events)
     this.handleEvents();
 
+    // Lắng nghe / xử lý các sự kiện (DOM events)
+    // Listening / handling events (DOM events)
+    this.handleEvents();
+
     // Render playlist
     this.render();
 
@@ -360,67 +365,9 @@ const app = {
     // Display the initial state of the repeat & random button
     randomBtn.classList.toggle("active", this.isRandom);
     repeatBtn.classList.toggle("active", this.isRepeat);
+    randomBtn.classList.toggle("active", this.isRandom);
+    repeatBtn.classList.toggle("active", this.isRepeat);
   },
 };
 
 app.start();
-
-// Handle Events for the player
-
-const _playlist = document.querySelector(".playlist");
-const trending = document.querySelector("#section__trending");
-const _player = document.querySelector(".player .playing");
-let isScrolling = false;
-
-window.addEventListener("scroll", () => {
-  if (!isScrolling) {
-    // Nếu không có scroll đang diễn ra, thì lên lịch thực hiện việc xử lý
-    window.requestAnimationFrame(() => {
-      handleScroll();
-      isScrolling = false;
-    });
-
-    isScrolling = true;
-  }
-});
-
-function handleScroll() {
-  const trendingRect = trending.getBoundingClientRect();
-  const newMaxHeight = window.innerHeight - trendingRect.bottom + 230;
-
-  // Sử dụng transition để tạo hiệu ứng giảm dần mượt mà
-  setTimeout(() => {
-    _playlist.style.transition = "max-height 0.3s ease-in-out";
-  }, 0);
-  _playlist.style.maxHeight = newMaxHeight > 10 ? `${newMaxHeight}px` : "55vh";
-}
-
-// handle title running
-
-function updateMarqueeAnimation() {
-  const titleElement = document.querySelector(".song.active .title");
-  console.log(titleElement);
-  const parentElement = titleElement.parentElement;
-
-  if (titleElement.offsetWidth > parentElement.offsetWidth) {
-    // Bắt đầu chạy animation
-    titleElement.style.animationPlayState = "paused";
-  } else {
-    // Không chạy animation
-    titleElement.style.animationPlayState = "running";
-  }
-}
-
-playlist.addEventListener('click', function(event) {
-  // Kiểm tra xem phần tử được click có phải là một bài hát không
-  const songElement = event.target.closest('.song');
-  if (songElement) {
-    // Lấy index từ thuộc tính data-index của bài hát
-    const index = parseInt(songElement.getAttribute('data-index'), 10);
-
-    // Sau khi xử lý, cập nhật animation
-    updateMarqueeAnimation();
-  }
-});
-
-

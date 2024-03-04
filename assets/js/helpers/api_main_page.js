@@ -26,6 +26,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+console.log(songs);
+console.log(albums);
+console.log(artists);
+
+// render the albums
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
@@ -33,10 +38,13 @@ const $$ = document.querySelectorAll.bind(document);
 // Explore Container
 const exploreContainer = $(".card-grid-slider");
 
-// Featured Container
-const cardGroupGrids = $$(".card-group-grid");
-
 // Render Trending Containere
+
+// Featured Container
+const cardGroupGrids = $$('.card-group-grid');
+
+// Render Trending Container
+
 const trendingContainer = $$("#treding_container .card-group-grid");
 
 const songsCount = songs.length;
